@@ -1,0 +1,119 @@
+COVID-19: THE GAME
+
+INTRODUCTION
+On March 11, 2020, the COVID-19 virus was declared a pandemic, as countries around the world faced lockdowns and people began getting sick, wearing masks,and maintaining distance from one another. In the United States, businesses closed for a couple of months, travel was banned to and from different states and countries, and people were expected to quarantine for 14 days before even considering going anywhere. A state of panic took over the country. People were prevented from going about their lives and the mass outpouring of information from the media had resulted in misinformation and lack of understanding of the dangers of the virus and risk factors associated with your health. Adis Halilovic, self-taught developer had decided to begin making a video game about the pandemic to both ease his mind as well as spread accurate information about what each of us can do to prevent the spread of COVID-19. Below you will read the different stages of developement that the game takes as he makes his way through making his first ever video game. These stages will be labelled as versions starting with 0.1 and going up from there. These stages will not be determined by any specific benchmark, but will provide plenty of detail for the process which Adis took in developing the video game. All pixel art that you will see in this document was created by Adis Halilovic. Links to download the game will be available once a playable version (1.0) is developed.
+
+WHAT YOU SHOULD ALREADY KNOW
+This technical document will assume that you already have a basic understanding of the following
+	A general understanding of game developement.
+	Some programming experience. An introduction to C (Lua is written in clean C) will be useful in understanding the codes.
+	Good working knowledge of object-oriented programming (OOP) and game states.
+
+LUA AND LÖVE
+This game is being developed using Lua as the coding language within the LÖVE framework. The biggest benefit to using this framework is that it is a free, open-source and easily available tool that works on Windows, Mac OS X, Linux, Android and iOS. Lua is a powerful and efficient scripting language that supports procedural programming, object-oriented programming, and data-driven programming. All of which are beneficial to the goals of the video game. For more information on how to use Lua and LÖVE in developing a videogame, please reference the links below that will take you to the technical documentation for both of these tools.
+	
+	LÖVE: https://love2d.org/wiki/Main_Page
+	Lua:https://www.lua.org/manual/5.3/manual.html 
+
+With object-oriented programming there are different ways that it can be done with Lua. This game uses code developed by Matthias Richter copyright (c) 2010-2013. This is a free of charge software developed to allow the user to create classes within Lua. These classes can be called on in many locations to serve as objects in the game. This allows for multiple files, each of which will serve as a class in the game and will be called using 
+	
+	require 'file_name'
+	
+	--this call is used in the main file to call the object
+	file_name = file_name()
+
+	--used in the file called file_name, this sets the specific file as a class object	
+	file_name = Class{}
+
+These classes allow you to create multiple objects in the game that all behave similarly but do not require repetition of certain codes. This not only allows the user to create multiple items out of one set of code, but will also allow self referencing within the code. As you will see in examples of code later in this document, there will be the use of self.___ to allow the object to reference itself so that in future reference in other files the object can be reference by file_name:function() for ease of debugging.
+
+PROJECTED GOALS
+When trying to determine where a project will be in the end, it most always ends up being something else in reality. This is true for videogames as well. This means that what the videogame is projected to be now and what it will be in the end will likely not be exactly the same. As such, this section will serve as a benchmark for understanding what there is left to do as you read through the rest of this document. It will also allow you to compare the end product to what the initial idea was to understand the process in which the developer worked through problems associated with the videogame.
+The setting of the videogame will take place within an office in the United States of America. You will play as an office worker, tasked to come into work today as your employer has decided not to allow you to work from home. You will be assigned several office tasks that must be completed in no particular order but must all be completed for you to finish the game. During your office work, you will be inundated by coworkers and managers as well as unknown clients and maybe a pet or two. These will be obstacles in completing your task or necessary resources in survival for you must avoid getting the coronavirus at all costs. There is risk simply by coming into the office and you will be given only the knowledge of how to keep yourself safe. This means collecting personal protective equipment such as gloves and masks, as well as learning to maintain a proper, safe distance from all others in the office. You will know your risk factor and the possible dangers that could happen should you contract COVID-19 and if you by chance interact with an object or person that has been infected with COVID-19 there will be a chance that you will get it yourself. It is your job to keep yourself safe while also completing your daily tasks without putting at risk yourself, your family and the rest of the office. 
+The game will be primarily distributed as a computer game to start. 
+
+VERSION 0.1: THE TITLE
+The only part of this version of the videogame is a working title screen. The title screen is a looping pixel art animation of the words "COVID-19" with a background of pixelated coronavirus particles and a blinking "Press Space to Start" text that shows up on the screen. The title screen, once space is pressed, goes to black and will signal the transition into the gameplay. The pixel art and sprite sheets will all be present on this page as embedded images. 
+Several files are required in this version already. One is 'class', which was discussed prior in the document. The source code for 'class' can be found here on Github. The next file required in this version is 'push'. 
+
+Push is a free of charge software developed by Ulysse Ramage Copyright (c) 2018. Push will be referenced in the main code for the videogame. Push serves a couple of purposes. Since this videogame is meant to mimic old retro style videogames, the window of the game has to be scaled to a specific resolution to maintain the quality of the game. Common resolutions for screens nowadays start at 1280 x 720 px, and go up. However, this game will be developed at 432 x 234px. The referece for these are shown below.
+
+	WINDOW_HEIGHT = 720
+	WINDOW_WIDTH = 1280
+
+	VIRTUAL_HEIGHT = 243
+	VIRTUAL_WIDTH = 432
+
+	love.graphics.setDefaultFilter('nearest', 'nearest')
+
+The window height and width is scaled through nearest neighbor filtering to a virtual height and width to use the initial sizes of the pixel art without resulting in grainy, unintelligible or awkwardly scaled images. Push is called in the load and draw sections of the main code to set up the screen and apply it correctly. 
+
+	function love.load()
+
+    		love.graphics.setFont(love.graphics.newFont('font.ttf', 8))
+    
+    		push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
+        		fullscreen = false,
+        		resizable = true
+    		})
+    
+		--sets a title for the window
+    		love.window.setTitle('COVID-19 the Game')
+
+    		gamestate = 'title'
+	end
+
+	function love.draw()
+    		push:apply('start')
+
+    		if gamestate == 'title' then
+
+		--sets a purple background for the title screen
+        	love.graphics.clear(142/255, 68/255, 173/255, 255/255)
+	
+        	love.graphics.translate(0,0)
+
+		--calls the title class' render function to draw it onto the screen.
+        	title:render()
+    		end
+
+    		push:apply('end')
+	end
+
+Push has several parameters that can be used in push:setupScreen and will be added in future versions of the game as it is determined necessary. 
+The other file needed in this version aside from class files is 'Util'. This file defines specific utility functions used by the game engine. Currently the file has one function defined.
+	
+	function generateQuads(atlas, tilewidth, tileheight)
+		
+This takes an imported spritesheet or texture image and splits it into quads using the height and width of the tiles so that each individual sprite can be drawn onto the screen. This is particularly useful in creating sprite animations such as walking and in our case, title screen animations. This function returns a set of quads that are individual labels of each of the sprites in the spritesheet. 
+
+Lastly, the file 'Animation' is needed to prepare the game files to create animations. This file was taken from Harvard CS50 on edX and will be used to set up individual frames for animations. The file include several functions. 
+
+	--initializes the parameters for the animation such as texture(spritesheet), frames(quads), and time interval for changing frames
+	function Animation:init(params)
+	--will determine the current frame in the animation
+	function Animation:getCurrentFrame()
+	--restarts the animation back to the first frame when it reaches the end of the set of frames
+	function Animation:restart()
+	--updates the current frame of animation after the specified amount of time has passed
+	function Animation:update(dt)
+
+For the title screen the individual frames were drawn out and set up as a spritesheet which you can see below. Also included for the title is an image file of the coronavirus filling up the background and an image file of the hyphen and the block that says "THE GAME" all of which are shown below. 
+
+The title screen is initialized by loading all of the images into memory and the spritesheet for the words is labled as self.texture, then the state of the title is set to 'title' to allow the animation to be tied to a state. The title works by separating the words into quads using the function generateQuads, then setting up a frame animation below. 
+
+	self.animations = {
+        	['title'] = Animation({
+            		texture = self.texture,
+            		frames = self.words,
+            		interval = 0.15
+        	})
+    	}
+	--initializes the animation to be set to 'title'
+    	self.animation = self.animations['title']
+    	self.currentFrame = self.animation:getCurrentFrame()
+
+The title is set to update the animation based on the screen refresh rate as well as allow the user to press space to change the title.state to 'start' which forces the game screen to go into a black screen and set the gamestate to 'start' as well. 
+Lastly, the title renders the coronavirus background, the hyphen and "THE GAME" block, and then based on the current frame of animation, the COVID-19 words. The animation happens continuously until the user presses space to move onto the game. 
+
+
